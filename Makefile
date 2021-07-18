@@ -22,7 +22,7 @@ publish:
 	npm publish
 
 deploy:
-	git push heroku
+	git push heroku master
 
 test:
 	npm test -s
