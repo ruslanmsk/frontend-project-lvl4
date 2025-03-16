@@ -1,12 +1,13 @@
 import { Formik, Field, useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import useAuth from '../hooks/index.jsx';
-import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-import routes from '../routes.js';
 import { Button, Form } from 'react-bootstrap';
-import { login } from '../slices/authSlice.jsx';
-import { useDispatch } from 'react-redux'
+import { setCredentials } from '../slices/authSlice.jsx';
+import { useDispatch } from 'react-redux';
+
+import { useLoginMutation } from '../services/chat.js';
+
 
 export const LoginPage = () => {
   const location = useLocation();
@@ -15,6 +16,9 @@ export const LoginPage = () => {
   const inputRef = useRef();
   const [authFailed, setAuthFailed] = useState(false);
   const dispatch = useDispatch();
+
+  const [login, {isLoading}] = useLoginMutation();
+  
 
 
   useEffect(() => {
@@ -29,11 +33,12 @@ export const LoginPage = () => {
     onSubmit: async (values) => {
       setAuthFailed(false);
 
+
       try {
-        const res = await axios.post(routes.loginPath(), values);
+        const res = await login(values);
         const {username, token} = res.data;
         localStorage.setItem('user', JSON.stringify({username, token}));
-        dispatch(login({username, token}));
+        dispatch(setCredentials({username, token}));
         auth.logIn();
         const { from } = location.state;
         navigate(from);
@@ -87,7 +92,7 @@ export const LoginPage = () => {
                 />
                 <Form.Control.Feedback type="invalid">the username or password is incorrect</Form.Control.Feedback>
               </Form.Group>
-              <Button type="submit" variant="outline-primary">Submit</Button>
+              <Button disabled={isLoading} type="submit" variant="outline-primary">Submit</Button>
             </fieldset>
           </Form>
         </div>

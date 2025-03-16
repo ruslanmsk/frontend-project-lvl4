@@ -9,9 +9,16 @@ import React, { useState } from 'react';
 import AuthContext from './contexts/index.jsx';
 import { Provider } from 'react-redux'
 import { store } from './store';
+import { setCredentials } from './slices/authSlice.jsx';
+import { useDispatch } from 'react-redux';
 
 const AuthProvider = ({ children }) => {
+  const dispatch = useDispatch();
+  
   const user = JSON.parse(localStorage.getItem('user'));
+  console.log('AuthProvider', user);
+
+  dispatch(setCredentials({username: user.username, token: user.token}));
 
   const [loggedIn, setLoggedIn] = useState(Boolean(user && user.token));
 

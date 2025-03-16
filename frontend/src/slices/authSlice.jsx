@@ -5,7 +5,7 @@ const slice = createSlice({
   initialState: {username: null, token: null},
   // Редьюсеры в слайсах мутируют состояние и ничего не возвращают наружу
   reducers: {
-    login: (state, payload) => {
+    setCredentials: (state, {payload}) => {
       state.username = payload.username;
       state.token = payload.token;
     },
@@ -16,6 +16,6 @@ const slice = createSlice({
   },
 });
 
-export const { login, logout } = slice.actions;
+export const { setCredentials, logout } = slice.actions;
 
 export default slice.reducer;
