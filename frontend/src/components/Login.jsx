@@ -1,38 +1,98 @@
-import { Formik, Field, Form } from 'formik';
-export const LoginPage = () => (
+import { Formik, Field, useFormik } from 'formik';
+import React, { useEffect, useRef, useState } from 'react';
+import useAuth from '../hooks/index.jsx';
+import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
+import routes from '../routes.js';
+import { Button, Form } from 'react-bootstrap';
+import { login } from '../slices/authSlice.jsx';
+import { useDispatch } from 'react-redux'
+
+export const LoginPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const inputRef = useRef();
+  const [authFailed, setAuthFailed] = useState(false);
+  const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    onSubmit: async (values) => {
+      setAuthFailed(false);
+
+      try {
+        const res = await axios.post(routes.loginPath(), values);
+        const {username, token} = res.data;
+        localStorage.setItem('user', JSON.stringify({username, token}));
+        dispatch(login({username, token}));
+        auth.logIn();
+        const { from } = location.state;
+        navigate(from);
+      } catch (err) {
+        formik.setSubmitting(false);
+        if (err.isAxiosError && err.response.status === 401) {
+          setAuthFailed(true);
+          inputRef.current.select();
+          return;
+        }
+        throw err;
+      }
+    },
+  });
+
+  return (
     <>
       <h3>Login</h3>
 
-      <Formik 
-        initialValues={{ login: "", password: "" }}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log("Form is validated! Submitting the form...");
-          console.log(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }}
-      >
-        {() => (
-          <Form>
-            <div className="form-group">
-              <label htmlFor="login">Login</label>
-              <Field
-                type="login"
-                name="login" 
-                className="form-control"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <Field
-                type="password"
-                name="password"
-                className="form-control"
-              />
-            </div>
-
-            <button type="submit">Submit</button>
+      <div className="container-fluid">
+      <div className="row justify-content-center pt-5">
+        <div className="col">
+          <Form onSubmit={formik.handleSubmit} className="p-3">
+            <fieldset>
+              <Form.Group>
+                <Form.Label htmlFor="username">Username</Form.Label>
+                <Form.Control
+                  onChange={formik.handleChange}
+                  value={formik.values.username}
+                  placeholder="username"
+                  name="username"
+                  id="username"
+                  autoComplete="username"
+                  isInvalid={authFailed}
+                  required
+                  ref={inputRef}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label htmlFor="password">Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  onChange={formik.handleChange}
+                  value={formik.values.password}
+                  placeholder="password"
+                  name="password"
+                  id="password"
+                  autoComplete="current-password"
+                  isInvalid={authFailed}
+                  required
+                />
+                <Form.Control.Feedback type="invalid">the username or password is incorrect</Form.Control.Feedback>
+              </Form.Group>
+              <Button type="submit" variant="outline-primary">Submit</Button>
+            </fieldset>
           </Form>
-        )}
-      </Formik>
+        </div>
+      </div>
+    </div>
     </>
-  );
+  )
+};

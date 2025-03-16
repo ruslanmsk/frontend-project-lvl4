@@ -4,7 +4,8 @@
   "description": "Slack app",
   "main": "index.js",
   "scripts": {
-    "start": "start-server",
+    "build": "npm run build --prefix frontend",
+    "start": "start-server -s ./frontend/dist",
     "postinstall": "cd frontend && npm ci"
   },
   "repository": {

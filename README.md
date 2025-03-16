@@ -13,3 +13,5 @@ Routing - https://ru.hexlet.io/blog/posts/react-router-v6
 
 Formik guide - https://ru.hexlet.io/blog/posts/formik-v-react
 Formik package - https://formik.org/docs/overview
+
+Auth Example - https://redux-toolkit.js.org/rtk-query/usage/examples#authentication

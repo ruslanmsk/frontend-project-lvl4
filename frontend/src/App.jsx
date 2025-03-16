@@ -1,20 +1,63 @@
 
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { MainPage } from './components/Main';
 import { LoginPage } from './components/Login';
 import { NotFoundPage } from './components/NotFound';
+import useAuth from './hooks/index.jsx';
+import React, { useState } from 'react';
+import AuthContext from './contexts/index.jsx';
+import { Provider } from 'react-redux'
+import { store } from './store';
+
+const AuthProvider = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  const [loggedIn, setLoggedIn] = useState(Boolean(user && user.token));
+
+  const logIn = () => setLoggedIn(true);
+  const logOut = () => {
+    localStorage.removeItem('userId');
+    setLoggedIn(false);
+  };
+
+  return (
+    <AuthContext.Provider value={{ loggedIn, logIn, logOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+const PrivateRoute = ({ children }) => {
+  const auth = useAuth();
+  const location = useLocation();
+
+  return (
+    auth.loggedIn ? children : <Navigate to="/login" state={{ from: location }} />
+  );
+};
 
 function App() {
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="*" element={<NotFoundPage />} />
-        <Route path="/" element={<MainPage />} />
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="*" element={<NotFoundPage />} />
+            <Route 
+              path="/" 
+              element={
+                <PrivateRoute>
+                  <MainPage />
+                </PrivateRoute>
+              } 
+            />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </Provider>
   );
 }
 
