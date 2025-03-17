@@ -1,19 +1,44 @@
-import { useGetChannelsQuery, useGetMessagesQuery } from '../services/chat.js';
+import { useGetChannelsQuery, useGetMessagesQuery, useAddMessageMutation } from '../services/chat.js';
 import { addChannels, selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
-import { addMessages, selectors as messagesSelectors } from '../slices/messagesSlice.jsx';
+import { addMessages, addMessage, selectors as messagesSelectors } from '../slices/messagesSlice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { io } from "socket.io-client";
+
+
+
+// const socket = io('http://localhost:5002');
+const socket = io(window.location.origin);
 
 
 
 export const MainPage = () => {
     const dispatch = useDispatch();
+    const [newMessage, setNewMessage] = useState('');
+    const [channelId, setChannelId] = useState('');
+    const [sendMessageToServer, {isLoading}] = useAddMessageMutation();
+
+    // Достаём username из стейта
+    const username = useSelector((state) => state.auth.username);
 
     const {data: channelsData = []} = useGetChannelsQuery();
     const {data: messagesData = []} = useGetMessagesQuery();
 
-    console.log(111, channelsData);
-    console.log(222, messagesData);
+    console.log('channelsData', channelsData);
+    console.log('messagesData', messagesData);
+
+    useEffect(() => {
+        if (channelsData.length > 0 && !channelId) {
+            setChannelId(channelsData[0].id); // Устанавливаем первый канал из списка
+        }
+    }, [channelsData, channelId]);
+
+    useEffect(() => {
+        socket.on('newMessage', (message) => {
+            console.log('reciv mnew mes', message);
+            dispatch(addMessage(message));
+        });
+    }, []);
 
     useEffect(() => {
         dispatch(addChannels(channelsData));
@@ -22,6 +47,14 @@ export const MainPage = () => {
 
     const channels = useSelector(channelsSelectors.selectAll);
     const messages = useSelector(messagesSelectors.selectAll);
+
+    const sendMessage = async (event) => {
+        event.preventDefault();
+        if (newMessage.trim()) {
+            await sendMessageToServer({body: newMessage, username, channelId});
+            setNewMessage(""); // Очищаем поле ввода
+        }
+    };
 
     return (
         <>
@@ -66,9 +99,16 @@ export const MainPage = () => {
                                 <div className="text-break mb-2"><b>admin</b>: w</div> */}
                             </div>
                             <div className="mt-auto px-5 py-3">
-                            <form noValidate="" className="py-1 border rounded-2">
+                            <form onSubmit={sendMessage} noValidate="" className="py-1 border rounded-2">
                                 <div className="input-group has-validation">
-                                    <input onChange={() => {}} name="body" aria-label="Новое сообщение" placeholder="Введите сообщение..." className="border-0 p-0 ps-2 form-control" value="" />
+                                    <input 
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        name="body"
+                                        aria-label="Новое сообщение"
+                                        placeholder="Введите сообщение..."
+                                        className="border-0 p-0 ps-2 form-control"
+                                    />
                                     <button type="submit" disabled="" className="btn btn-group-vertical">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                                         <path fillRule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"></path>

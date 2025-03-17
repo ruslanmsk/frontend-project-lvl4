@@ -10,12 +10,12 @@ const slice = createSlice({
   initialState,
   // Редьюсеры в слайсах мутируют состояние и ничего не возвращают наружу
   reducers: {
-    // addMessage: messagesAdapter.addOne,
+    addMessage: messagesAdapter.addOne,
     addMessages: messagesAdapter.addMany,
   },
 });
 
-export const { addMessages } = slice.actions;
+export const { addMessages, addMessage } = slice.actions;
 
 export const selectors = messagesAdapter.getSelectors((state) => state.messages);
 

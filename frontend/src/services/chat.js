@@ -15,10 +15,10 @@ export const chatApi = createApi({
     }),
     endpoints: (builder) => ({
       login: builder.mutation({
-        query: ({username, password}) => ({
+        query: (body) => ({
           url: 'login',
           method: 'POST',
-          body: { username, password },
+          body,
         }),
       }),
       getChannels: builder.query({
@@ -27,7 +27,14 @@ export const chatApi = createApi({
       getMessages: builder.query({
         query: () => 'messages',
       }),
+      addMessage: builder.mutation({
+        query: (body) => ({
+          url: 'messages',
+          method: 'POST',
+          body,
+        }),
+      }),
     }),
 });
 
-export const { useLoginMutation, useGetChannelsQuery, useGetMessagesQuery } = chatApi;
+export const { useLoginMutation, useGetChannelsQuery, useGetMessagesQuery, useAddMessageMutation } = chatApi;

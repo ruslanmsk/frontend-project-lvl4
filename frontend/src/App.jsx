@@ -16,9 +16,10 @@ const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
   
   const user = JSON.parse(localStorage.getItem('user'));
-  console.log('AuthProvider', user);
 
-  dispatch(setCredentials({username: user.username, token: user.token}));
+  if (user) {
+    dispatch(setCredentials({username: user.username, token: user.token}));
+  }
 
   const [loggedIn, setLoggedIn] = useState(Boolean(user && user.token));
 
