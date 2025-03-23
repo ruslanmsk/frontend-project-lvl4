@@ -10,12 +10,14 @@ const slice = createSlice({
   initialState,
   // Редьюсеры в слайсах мутируют состояние и ничего не возвращают наружу
   reducers: {
-    // addChannel: channelsAdapter.addOne,
+    addChannel: channelsAdapter.addOne,
     addChannels: channelsAdapter.addMany,
+    editChannel: channelsAdapter.updateOne,
+    removeChannel: channelsAdapter.removeOne,
   },
 });
 
-export const { addChannels } = slice.actions;
+export const { addChannels, addChannel, editChannel, removeChannel } = slice.actions;
 
 export const selectors = channelsAdapter.getSelectors((state) => state.channels);
 
