@@ -9,7 +9,7 @@ const slice = createSlice({
       state.username = payload.username;
       state.token = payload.token;
     },
-    logout: () => {
+    logout: (state) => {
       state.username = null;
       state.token = null;
     },

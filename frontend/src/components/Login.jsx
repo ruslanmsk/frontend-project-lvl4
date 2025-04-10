@@ -1,7 +1,7 @@
 import { Formik, Field, useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import useAuth from '../hooks/index.jsx';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 import { setCredentials } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
@@ -13,13 +13,13 @@ export const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useAuth();
+
   const inputRef = useRef();
   const [authFailed, setAuthFailed] = useState(false);
   const dispatch = useDispatch();
 
   const [login, {isLoading}] = useLoginMutation();
   
-
 
   useEffect(() => {
     inputRef.current.focus();
@@ -40,8 +40,7 @@ export const LoginPage = () => {
         localStorage.setItem('user', JSON.stringify({username, token}));
         dispatch(setCredentials({username, token}));
         auth.logIn();
-        const { from } = location.state;
-        navigate(from);
+        navigate(location.state?.from || '/');
       } catch (err) {
         formik.setSubmitting(false);
         if (err.isAxiosError && err.response.status === 401) {
@@ -95,6 +94,7 @@ export const LoginPage = () => {
               <Button disabled={isLoading} type="submit" variant="outline-primary">Submit</Button>
             </fieldset>
           </Form>
+          <Link to="/signup">Зарегистрироваться</Link>
         </div>
       </div>
     </div>

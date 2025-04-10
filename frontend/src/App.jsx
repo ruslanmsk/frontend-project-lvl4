@@ -11,6 +11,8 @@ import { Provider } from 'react-redux'
 import { store } from './store';
 import { setCredentials } from './slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
+import { SignupPage } from './components/Signup.jsx';
+import {Header} from './components/Header.jsx';
 
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -25,7 +27,7 @@ const AuthProvider = ({ children }) => {
 
   const logIn = () => setLoggedIn(true);
   const logOut = () => {
-    localStorage.removeItem('userId');
+    localStorage.removeItem('user');
     setLoggedIn(false);
   };
 
@@ -51,6 +53,7 @@ function App() {
     <Provider store={store}>
       <AuthProvider>
         <BrowserRouter>
+          <Header />
           <Routes>
             <Route path="*" element={<NotFoundPage />} />
             <Route 
@@ -62,6 +65,7 @@ function App() {
               } 
             />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
