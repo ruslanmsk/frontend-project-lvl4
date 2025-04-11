@@ -21,9 +21,11 @@
   "homepage": "https://github.com/ruslanmsk/frontend-project-lvl4#readme",
   "dependencies": {
     "@hexlet/chat-server": "^2.0.4",
+    "@rollbar/react": "^0.12.1",
     "i18next": "^24.2.3",
     "leo-profanity": "^1.7.0",
     "react-i18next": "^15.4.1",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "rollbar": "^2.26.4"
   }
 }

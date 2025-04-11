@@ -17,6 +17,14 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { ru, en } from './locales.js';
 import { ToastContainer } from 'react-toastify';
+import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
+
+const rollbarConfig = {
+  accessToken: '467b2df1aaf84b9e9af299ff01587c25f759fa2bb8e28ff7d7b39313f3496a0071212625c962fa0424fca77711820026',
+  environment: 'testenv',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+};
 
 
 const AuthProvider = ({ children }) => {
@@ -71,30 +79,34 @@ function App() {
 
   return (
     <Provider store={store}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Header />
+      <RollbarProvider config={rollbarConfig}>
+        <ErrorBoundary>
+          <AuthProvider>
+            <BrowserRouter>
+              <Header />
 
-          {/* Тосты здесь, вне Routes */}
-          <ToastContainer position="top-right" autoClose={3000} />
+              {/* Тосты здесь, вне Routes */}
+              <ToastContainer position="top-right" autoClose={3000} />
 
-          <Routes>
-            <Route path="*" element={<NotFoundPage />} />
-            <Route 
-              path="/" 
-              element={
-                <PrivateRoute>
-                  <MainPage />
-                </PrivateRoute>
-              } 
-            />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-          </Routes>
+              <Routes>
+                <Route path="*" element={<NotFoundPage />} />
+                <Route 
+                  path="/" 
+                  element={
+                    <PrivateRoute>
+                      <MainPage />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+              </Routes>
 
-          
-        </BrowserRouter>
-      </AuthProvider>
+              
+            </BrowserRouter>
+          </AuthProvider>
+        </ErrorBoundary>
+      </RollbarProvider>
     </Provider>
   );
 }
