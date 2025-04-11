@@ -1,11 +1,12 @@
+/* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
 const slice = createSlice({
   name: 'auth',
-  initialState: {username: null, token: null},
+  initialState: { username: null, token: null },
   // Редьюсеры в слайсах мутируют состояние и ничего не возвращают наружу
   reducers: {
-    setCredentials: (state, {payload}) => {
+    setCredentials: (state, { payload }) => {
       state.username = payload.username;
       state.token = payload.token;
     },

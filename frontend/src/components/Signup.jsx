@@ -1,25 +1,25 @@
-import { Formik, Field, useFormik } from 'formik';
-import React, { useEffect, useRef, useState } from 'react';
-import useAuth from '../hooks/index.jsx';
+import { useFormik } from 'formik';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
-import { setCredentials } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
-import { useTranslation } from "react-i18next";
-import { useSignupMutation } from '../services/chat.js';
+import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { toast } from 'react-toastify';
+import { useSignupMutation } from '../services/chat.js';
+import { setCredentials } from '../slices/authSlice.jsx';
+import useAuth from '../hooks/index.jsx';
 
-
-export const SignupPage = () => {
+const SignupPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useAuth();
   const inputRef = useRef();
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  
-  const [signup, {isRegistering}] = useSignupMutation();
-  
+
+  const [signup, { isRegistering }] = useSignupMutation();
+
   useEffect(() => {
     inputRef.current.focus();
   }, []);
@@ -52,19 +52,17 @@ export const SignupPage = () => {
           formik.setErrors({ username: t('signup.errors.userExisted') });
           inputRef.current.select();
           return;
+        }
+        if (res.error.status === 'FETCH_ERROR') {
+          toast.error(t('toasts.networkError'));
         } else {
-          if (error.status === 'FETCH_ERROR') {
-              toast.error(t('toasts.networkError'));
-          } else {
-              toast.error(t('toasts.loadingError'));
-          }
+          toast.error(t('toasts.loadingError'));
         }
       }
-      
 
-      const {username, token} = res.data;
-      localStorage.setItem('user', JSON.stringify({username, token}));
-      dispatch(setCredentials({username, token}));
+      const { username, token } = res.data;
+      localStorage.setItem('user', JSON.stringify({ username, token }));
+      dispatch(setCredentials({ username, token }));
       auth.logIn();
       navigate(location.state?.from || '/');
     },
@@ -75,62 +73,63 @@ export const SignupPage = () => {
       <h3>{t('signup.title')}</h3>
 
       <div className="container-fluid">
-      <div className="row justify-content-center pt-5">
-        <div className="col">
-          <Form onSubmit={(e) => {e.preventDefault(); console.log(formik.errors); formik.handleSubmit(e);}} className="p-3">
-            <fieldset>
-              <Form.Group>
-                <Form.Label htmlFor="username">{t('signup.username')}</Form.Label>
-                <Form.Control
-                  onChange={formik.handleChange}
-                  value={formik.values.username}
-                  name="username"
-                  id="username"
-                  autoComplete="username"
-                  isInvalid={!!formik.errors.username && formik.touched.username}
-                  ref={inputRef}
-                />
-                <Form.Control.Feedback type="invalid">
-                  {formik.errors.username}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label htmlFor="password">{t('signup.password')}</Form.Label>
-                <Form.Control
-                  type="password"
-                  onChange={formik.handleChange}
-                  value={formik.values.password}
-                  name="password"
-                  id="password"
-                  autoComplete="current-password"
-                  isInvalid={!!formik.errors.password && formik.touched.password}
-                  
-                />
-                <Form.Control.Feedback type="invalid">
-                  {formik.errors.password}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label htmlFor="confirmPassword">{t('signup.confirmPassword')}</Form.Label>
-                <Form.Control
-                  type="password"
-                  onChange={formik.handleChange}
-                  value={formik.values.confirmPassword}
-                  name="confirmPassword"
-                  id="confirmPassword"
-                  autoComplete="current-password"
-                  isInvalid={!!formik.errors.confirmPassword && formik.touched.confirmPassword} 
-                />
-                <Form.Control.Feedback type="invalid">
-                  {formik.errors.confirmPassword}
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Button type="submit" disabled={isRegistering} variant="outline-primary">{t('signup.submit')}</Button>
-            </fieldset>
-          </Form>
+        <div className="row justify-content-center pt-5">
+          <div className="col">
+            <Form onSubmit={(e) => { e.preventDefault(); console.log(formik.errors); formik.handleSubmit(e); }} className="p-3">
+              <fieldset>
+                <Form.Group>
+                  <Form.Label htmlFor="username">{t('signup.username')}</Form.Label>
+                  <Form.Control
+                    onChange={formik.handleChange}
+                    value={formik.values.username}
+                    name="username"
+                    id="username"
+                    autoComplete="username"
+                    isInvalid={!!formik.errors.username && formik.touched.username}
+                    ref={inputRef}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.username}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label htmlFor="password">{t('signup.password')}</Form.Label>
+                  <Form.Control
+                    type="password"
+                    onChange={formik.handleChange}
+                    value={formik.values.password}
+                    name="password"
+                    id="password"
+                    autoComplete="current-password"
+                    isInvalid={!!formik.errors.password && formik.touched.password}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.password}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label htmlFor="confirmPassword">{t('signup.confirmPassword')}</Form.Label>
+                  <Form.Control
+                    type="password"
+                    onChange={formik.handleChange}
+                    value={formik.values.confirmPassword}
+                    name="confirmPassword"
+                    id="confirmPassword"
+                    autoComplete="current-password"
+                    isInvalid={!!formik.errors.confirmPassword && formik.touched.confirmPassword}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {formik.errors.confirmPassword}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Button type="submit" disabled={isRegistering} variant="outline-primary">{t('signup.submit')}</Button>
+              </fieldset>
+            </Form>
+          </div>
         </div>
       </div>
-    </div>
     </>
-  )
+  );
 };
+
+export default SignupPage;

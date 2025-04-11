@@ -5,8 +5,7 @@ import channelsReducer from './slices/channelsSlice';
 import messageReducer from './slices/messagesSlice';
 import { chatApi } from './services/chat';
 
-
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     // Add the generated reducer as a specific top-level slice
     [chatApi.reducerPath]: chatApi.reducer,
@@ -22,3 +21,5 @@ export const store = configureStore({
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors
 // see `setupListeners` docs - takes an optional callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+export default store;
