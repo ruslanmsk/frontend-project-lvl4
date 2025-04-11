@@ -39,6 +39,7 @@ const ru = {
             errors: {
                 channelNameInvalidLength: 'Название должно быть от 3 до 20 символов',
                 channelExisted: 'Канал с таким названием уже существует',
+                channelNameModeration: 'Канал содержат нецензурные слова',
             },
             editModal: {
                 title: 'Переименовать канал',
@@ -108,6 +109,7 @@ const en = {
             errors: {
                 channelNameInvalidLength: 'The name must be between 3 and 20 characters long',
                 channelExisted: 'A channel with that name already exists',
+                channelNameModeration: 'The channel contains profanity',
             },
             editModal: {
                 title: 'Rename channel',

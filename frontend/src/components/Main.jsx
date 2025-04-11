@@ -4,6 +4,7 @@ import { addMessages, addMessage, selectors as messagesSelectors } from '../slic
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { io } from "socket.io-client";
+import { clean } from '../utils/moderation.js';
 
 
 
@@ -86,7 +87,7 @@ export const MainPage = () => {
     const sendMessage = async (event) => {
         event.preventDefault();
         if (newMessage.trim()) {
-            await sendMessageToServer({body: newMessage, username, channelId: currentChannelId});
+            await sendMessageToServer({body: clean(newMessage), username, channelId: currentChannelId});
             setNewMessage(""); // Очищаем поле ввода
         }
     };

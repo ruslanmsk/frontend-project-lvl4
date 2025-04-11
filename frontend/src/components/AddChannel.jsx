@@ -7,6 +7,7 @@ import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
 import {useAddChannelMutation} from '../services/chat.js';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import {hasProfanity} from '../utils/moderation.js'
 
 
 export const AddChannel = ({channelCreated}) => {
@@ -31,6 +32,11 @@ export const AddChannel = ({channelCreated}) => {
             'unique',
             t('channel.errors.channelExisted'),
             (value) => value && !channelNames.includes(value.toLowerCase())
+          )
+          .test(
+            'moderation',
+            t('channel.errors.channelNameModeration'),
+            (value) => value && !hasProfanity(value),
           ),
       });
 
