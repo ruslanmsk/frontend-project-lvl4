@@ -4,10 +4,10 @@ const ru = {
         notFound: 'Страница не найдена',
         login: {
             title: 'Вход',
-            username: 'Имя пользователя',
+            username: 'Ваш ник',
             password: 'Пароль',
             submit: 'Войти',
-            registerText: 'Зарегистрироваться',
+            registerText: 'Регистрация',
             errors: {
                 invalidCredentials: 'Неверные имя пользователя или пароль',
             }
@@ -16,13 +16,13 @@ const ru = {
             title: 'Регистрация',
             username: 'Имя пользователя',
             password: 'Пароль',
-            confirmPassword: 'Повторите пароль',
-            submit: 'Войти',
+            confirmPassword: 'Подтвердите пароль',
+            submit: 'Зарегистрироваться',
             errors: {
                 usernameInvalidLength: 'Имя должно быть от 3 до 20 символов',
                 passwordInvalidLength: 'Пароль должен быть не менее 6 символов',
                 confirmPasswordInvalid: 'Пароли должны совпадать',
-                userExisted: 'Пользователь с таким именем уже существует',
+                userExisted: 'Такой пользователь уже существует',
             }
         },
         channel: {
@@ -33,16 +33,17 @@ const ru = {
             messagesCount_few: '{{count}} сообщения',
             messagesCount_many: '{{count}} сообщений',
             placeholder: 'Введите сообщение...',
+            ariaLabel: 'Новое сообщение',
             submit: 'Отправить',
             deleteChannel: 'Удалить',
             editChannelName: 'Переименовать',
             errors: {
                 channelNameInvalidLength: 'Название должно быть от 3 до 20 символов',
                 channelExisted: 'Канал с таким названием уже существует',
-                channelNameModeration: 'Канал содержат нецензурные слова',
             },
             editModal: {
                 title: 'Переименовать канал',
+                label: 'Имя канала',
                 submit: 'Отправить',
                 cancel: 'Отменить',
             },
@@ -54,6 +55,7 @@ const ru = {
             },
             addModal: {
                 title: 'Добавить канал',
+                label: 'Имя канала',
                 submit: 'Отправить',
                 cancel: 'Отменить',
             },
@@ -103,16 +105,17 @@ const en = {
             messagesCount_few: '{{count}} messages',
             messagesCount_many: '{{count}} messages',
             placeholder: 'Enter a message...',
+            ariaLabel: 'Enter a message...',
             submit: 'Send',
             deleteChannel: 'Delete',
             editChannelName: 'Rename',
             errors: {
                 channelNameInvalidLength: 'The name must be between 3 and 20 characters long',
                 channelExisted: 'A channel with that name already exists',
-                channelNameModeration: 'The channel contains profanity',
             },
             editModal: {
                 title: 'Rename channel',
+                label: 'Channel name',
                 submit: 'Submit',
                 cancel: 'Cancel',
             },
@@ -124,6 +127,7 @@ const en = {
             },
             addModal: {
                 title: 'Add channel',
+                label: 'Channel name',
                 submit: 'Submit',
                 cancel: 'Cancel',
             },

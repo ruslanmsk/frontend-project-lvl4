@@ -140,6 +140,7 @@ export const MainPage = () => {
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         name="body"
+                                        aria-label={t('channel.ariaLabel')}
                                         placeholder={t('channel.placeholder')}
                                         className="border-0 p-0 ps-2 form-control"
                                     />

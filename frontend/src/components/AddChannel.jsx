@@ -7,7 +7,7 @@ import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
 import {useAddChannelMutation} from '../services/chat.js';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import {hasProfanity} from '../utils/moderation.js'
+import {clean} from '../utils/moderation.js'
 
 
 export const AddChannel = ({channelCreated}) => {
@@ -33,11 +33,6 @@ export const AddChannel = ({channelCreated}) => {
             t('channel.errors.channelExisted'),
             (value) => value && !channelNames.includes(value.toLowerCase())
           )
-          .test(
-            'moderation',
-            t('channel.errors.channelNameModeration'),
-            (value) => value && !hasProfanity(value),
-          ),
       });
 
     const formik = useFormik({
@@ -46,7 +41,7 @@ export const AddChannel = ({channelCreated}) => {
         },
         validationSchema,
         onSubmit: async (values, { resetForm }) => {
-            const createdChannel = await createChannel({name: values.channelName});
+            const createdChannel = await createChannel({name: clean(values.channelName)});
             if (!createdChannel.error) {
                 resetForm(); // Очищаем поле после отправки
                 handleClose(); // Закрываем попап
@@ -73,6 +68,9 @@ export const AddChannel = ({channelCreated}) => {
                 </Modal.Header>
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
+                        <Form.Label className="visually-hidden" htmlFor="exampleForm.ControlInput1">
+                            {t('channel.addModal.label')}
+                        </Form.Label>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Control
                                 onChange={formik.handleChange}
