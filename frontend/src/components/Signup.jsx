@@ -47,11 +47,20 @@ export const SignupPage = () => {
     onSubmit: async (values) => {
       const res = await signup(values);
 
-      if (res.error?.status === 409) {
-        formik.setErrors({ username: t('signup.errors.userExisted') });
-        inputRef.current.select();
-        return;
+      if (res.error) {
+        if (res.error.status === 409) {
+          formik.setErrors({ username: t('signup.errors.userExisted') });
+          inputRef.current.select();
+          return;
+        } else {
+          if (error.status === 'FETCH_ERROR') {
+              toast.error(t('toasts.networkError'));
+          } else {
+              toast.error(t('toasts.loadingError'));
+          }
+        }
       }
+      
 
       const {username, token} = res.data;
       localStorage.setItem('user', JSON.stringify({username, token}));

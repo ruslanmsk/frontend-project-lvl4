@@ -27,8 +27,16 @@ export const MainPage = () => {
     // Достаём username из стейта
     const username = useSelector((state) => state.auth.username);
 
-    const {data: channelsData = []} = useGetChannelsQuery();
-    const {data: messagesData = []} = useGetMessagesQuery();
+    const {data: channelsData = [], error: channelQueryError} = useGetChannelsQuery();
+    const {data: messagesData = [], error: messageQueryError} = useGetMessagesQuery();
+
+    if (channelQueryError || messageQueryError) {   
+        if (channelQueryError?.status === 'FETCH_ERROR' || messageQueryError?.status === 'FETCH_ERROR') {
+            toast.error(t('toasts.networkError'));
+        } else {
+            toast.error(t('toasts.loadingError'));
+        }
+    }
 
     console.log('channelsData', channelsData);
     console.log('messagesData', messagesData);

@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useLoginMutation } from '../services/chat.js';
 
 
+
 export const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export const LoginPage = () => {
   const [authFailed, setAuthFailed] = useState(false);
   const dispatch = useDispatch();
 
-  const [login, {isLoading}] = useLoginMutation();
+  const [login, {isLoading, error}] = useLoginMutation();
   
 
   useEffect(() => {
@@ -42,6 +43,12 @@ export const LoginPage = () => {
           setAuthFailed(true);
           inputRef.current.select();
           return;
+        } else {
+          if (error.status === 'FETCH_ERROR') {
+            toast.error(t('toasts.networkError'));
+          } else {
+              toast.error(t('toasts.loadingError'));
+          }
         }
       }
 

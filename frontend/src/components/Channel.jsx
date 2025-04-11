@@ -7,6 +7,7 @@ import { useFormik } from 'formik';
 import { useState } from 'react';
 import {useEditChannelMutation, useRemoveChannelMutation} from '../services/chat.js';
 import { useTranslation } from 'react-i18next';
+import { toast } from "react-toastify";
 
 export const Channel = ({channel, active, onClick}) => {
     const { t } = useTranslation();
@@ -49,16 +50,34 @@ export const Channel = ({channel, active, onClick}) => {
         validationSchema,
         onSubmit: async (values, { resetForm }) => {
             const editChannel = await editChannelName({id: channel.id, name: values.channelName});
-            resetForm(); // Очищаем поле после отправки
-            handleCloseEditModal(); // Закрываем попап
-            // channelCreated(createdChannel.data.id);
+            if (!editChannel.error) {
+                resetForm(); // Очищаем поле после отправки
+                handleCloseEditModal(); // Закрываем попап
+                toast.success(t('toasts.channelRenamed'));
+                // channelCreated(createdChannel.data.id);
+            } else {
+                if (error.status === 'FETCH_ERROR') {
+                    toast.error(t('toasts.networkError'));
+                } else {
+                    toast.error(t('toasts.loadingError'));
+                }
+            }
         },
     });
 
     const onDeleteChannel = async (event) => {
         event.preventDefault();
-        await removeChannel({id: channel.id});
-        handleCloseDeleteModal();
+        const result = await removeChannel({id: channel.id});
+        if (!result.error) {
+            handleCloseDeleteModal();
+            toast.success(t('toasts.channelRemoved'));
+        } else {
+            if (error.status === 'FETCH_ERROR') {
+                toast.error(t('toasts.networkError'));
+            } else {
+                toast.error(t('toasts.loadingError'));
+            }
+        }
     }
 
     return (

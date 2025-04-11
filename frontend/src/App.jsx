@@ -16,6 +16,8 @@ import {Header} from './components/Header.jsx';
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { ru, en } from './locales.js';
+import { ToastContainer } from 'react-toastify';
+
 
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -72,6 +74,10 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Header />
+
+          {/* Тосты здесь, вне Routes */}
+          <ToastContainer position="top-right" autoClose={3000} />
+
           <Routes>
             <Route path="*" element={<NotFoundPage />} />
             <Route 
@@ -85,6 +91,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
           </Routes>
+
+          
         </BrowserRouter>
       </AuthProvider>
     </Provider>

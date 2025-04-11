@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
 import {useAddChannelMutation} from '../services/chat.js';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 
 export const AddChannel = ({channelCreated}) => {
@@ -14,7 +15,7 @@ export const AddChannel = ({channelCreated}) => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const [createChannel, {isChannelCreating}] = useAddChannelMutation();
+    const [createChannel, {isChannelCreating, error}] = useAddChannelMutation();
 
 
     // Получаем список каналов из Redux
@@ -40,9 +41,12 @@ export const AddChannel = ({channelCreated}) => {
         validationSchema,
         onSubmit: async (values, { resetForm }) => {
             const createdChannel = await createChannel({name: values.channelName});
-            resetForm(); // Очищаем поле после отправки
-            handleClose(); // Закрываем попап
-            channelCreated(createdChannel.data.id);
+            if (!createdChannel.error) {
+                resetForm(); // Очищаем поле после отправки
+                handleClose(); // Закрываем попап
+                channelCreated(createdChannel.data.id);
+                toast.success(t('toasts.channelCreated'));
+            }  
         },
     });
 

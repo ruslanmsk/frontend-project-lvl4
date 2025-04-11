@@ -57,6 +57,13 @@ const ru = {
                 cancel: 'Отменить',
             },
         },
+        toasts: {
+            channelCreated: 'Канал создан',
+            channelRemoved: 'Канал удалён',
+            channelRenamed: 'Канал переименован',
+            networkError: 'Проблема с сетью. Проверьте подключение',
+            loadingError: 'Ошибка выполнения запроса',
+        }
     },
 };
 
@@ -119,6 +126,13 @@ const en = {
                 cancel: 'Cancel',
             },
         },
+        toasts: {
+            channelCreated: 'Channel created',
+            channelRemoved: 'Channel removed',
+            channelRenamed: 'Channel renamed',
+            networkError: 'Network problem. Check connection',
+            loadingError: 'Request execution error',
+        }
     },
 };
 
