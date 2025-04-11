@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
 import useAuth from '../hooks/index.jsx';
+import { useTranslation } from "react-i18next";
 
 export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auth = useAuth();
+  const { t } = useTranslation();
   
   const handleLogout = () => {
     // Очистка токена / состояния
@@ -26,7 +28,7 @@ export const Header = () => {
         {auth.loggedIn && (
           <Nav className="ms-auto">
             <Button variant="primary" onClick={handleLogout}>
-              Выйти
+              {t('logout')}
             </Button>
           </Nav>
         )}

@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 import { setCredentials } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
-
+import { useTranslation } from "react-i18next";
 import { useSignupMutation } from '../services/chat.js';
 import * as yup from 'yup';
 
@@ -16,6 +16,7 @@ export const SignupPage = () => {
   const auth = useAuth();
   const inputRef = useRef();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   
   const [signup, {isRegistering}] = useSignupMutation();
   
@@ -26,14 +27,14 @@ export const SignupPage = () => {
   const validationSchema = yup.object().shape({
     username: yup.string()
       .required()
-      .min(3, 'Имя должно быть от 3 до 20 символов')
-      .max(20, 'Имя должно быть от 3 до 20 символов'),
+      .min(3, t('signup.errors.usernameInvalidLength'))
+      .max(20, t('signup.errors.usernameInvalidLength')),
     password: yup.string()
       .required()
-      .min(6, 'Пароль должен быть не менее 6 символов'),
+      .min(6, t('signup.errors.passwordInvalidLength')),
     confirmPassword: yup.string()
       .required()
-      .oneOf([yup.ref('password'), null], 'Пароли должны совпадать')
+      .oneOf([yup.ref('password'), null], t('signup.errors.confirmPasswordInvalid')),
   });
 
   const formik = useFormik({
@@ -47,7 +48,7 @@ export const SignupPage = () => {
       const res = await signup(values);
 
       if (res.error?.status === 409) {
-        formik.setErrors({ username: 'Пользователь уже существует' });
+        formik.setErrors({ username: t('signup.errors.userExisted') });
         inputRef.current.select();
         return;
       }
@@ -62,7 +63,7 @@ export const SignupPage = () => {
 
   return (
     <>
-      <h3>Registration</h3>
+      <h3>{t('signup.title')}</h3>
 
       <div className="container-fluid">
       <div className="row justify-content-center pt-5">
@@ -70,11 +71,10 @@ export const SignupPage = () => {
           <Form onSubmit={(e) => {e.preventDefault(); console.log(formik.errors); formik.handleSubmit(e);}} className="p-3">
             <fieldset>
               <Form.Group>
-                <Form.Label htmlFor="username">Username</Form.Label>
+                <Form.Label htmlFor="username">{t('signup.username')}</Form.Label>
                 <Form.Control
                   onChange={formik.handleChange}
                   value={formik.values.username}
-                  placeholder="username"
                   name="username"
                   id="username"
                   autoComplete="username"
@@ -86,12 +86,11 @@ export const SignupPage = () => {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
-                <Form.Label htmlFor="password">Password</Form.Label>
+                <Form.Label htmlFor="password">{t('signup.password')}</Form.Label>
                 <Form.Control
                   type="password"
                   onChange={formik.handleChange}
                   value={formik.values.password}
-                  placeholder="password"
                   name="password"
                   id="password"
                   autoComplete="current-password"
@@ -103,12 +102,11 @@ export const SignupPage = () => {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group>
-                <Form.Label htmlFor="confirmPassword">Confirm password</Form.Label>
+                <Form.Label htmlFor="confirmPassword">{t('signup.confirmPassword')}</Form.Label>
                 <Form.Control
                   type="password"
                   onChange={formik.handleChange}
                   value={formik.values.confirmPassword}
-                  placeholder="confirm password"
                   name="confirmPassword"
                   id="confirmPassword"
                   autoComplete="current-password"
@@ -118,7 +116,7 @@ export const SignupPage = () => {
                   {formik.errors.confirmPassword}
                 </Form.Control.Feedback>
               </Form.Group>
-              <Button type="submit" variant="outline-primary">Submit</Button>
+              <Button type="submit" disabled={isRegistering} variant="outline-primary">{t('signup.submit')}</Button>
             </fieldset>
           </Form>
         </div>

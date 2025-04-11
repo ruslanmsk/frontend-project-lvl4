@@ -13,6 +13,9 @@ import { setCredentials } from './slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
 import { SignupPage } from './components/Signup.jsx';
 import {Header} from './components/Header.jsx';
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import { ru, en } from './locales.js';
 
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -48,6 +51,21 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
+
+  i18n
+  .use(initReactI18next) // passes i18n down to react-i18next
+  .init({
+    resources: {
+      ru,
+      en,
+    },
+    lng: "ru", 
+    fallbackLng: "en",
+
+    interpolation: {
+      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+    }
+  });
 
   return (
     <Provider store={store}>

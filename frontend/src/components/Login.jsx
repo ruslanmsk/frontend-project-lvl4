@@ -5,6 +5,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 import { setCredentials } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from "react-i18next";
 
 import { useLoginMutation } from '../services/chat.js';
 
@@ -13,6 +14,7 @@ export const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useAuth();
+  const { t } = useTranslation();
 
   const inputRef = useRef();
   const [authFailed, setAuthFailed] = useState(false);
@@ -33,29 +35,28 @@ export const LoginPage = () => {
     onSubmit: async (values) => {
       setAuthFailed(false);
 
-
-      try {
-        const res = await login(values);
-        const {username, token} = res.data;
-        localStorage.setItem('user', JSON.stringify({username, token}));
-        dispatch(setCredentials({username, token}));
-        auth.logIn();
-        navigate(location.state?.from || '/');
-      } catch (err) {
+      const res = await login(values);
+      if (res.error) {
         formik.setSubmitting(false);
-        if (err.isAxiosError && err.response.status === 401) {
+        if (res.error.status === 401) {
           setAuthFailed(true);
           inputRef.current.select();
           return;
         }
-        throw err;
       }
+
+      const {username, token} = res.data;
+      localStorage.setItem('user', JSON.stringify({username, token}));
+      dispatch(setCredentials({username, token}));
+      auth.logIn();
+      navigate(location.state?.from || '/');
+      
     },
   });
 
   return (
     <>
-      <h3>Login</h3>
+      <h3>{t('login.title')}</h3>
 
       <div className="container-fluid">
       <div className="row justify-content-center pt-5">
@@ -63,11 +64,10 @@ export const LoginPage = () => {
           <Form onSubmit={formik.handleSubmit} className="p-3">
             <fieldset>
               <Form.Group>
-                <Form.Label htmlFor="username">Username</Form.Label>
+                <Form.Label htmlFor="username">{t('login.username')}</Form.Label>
                 <Form.Control
                   onChange={formik.handleChange}
                   value={formik.values.username}
-                  placeholder="username"
                   name="username"
                   id="username"
                   autoComplete="username"
@@ -77,24 +77,23 @@ export const LoginPage = () => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label htmlFor="password">Password</Form.Label>
+                <Form.Label htmlFor="password">{t('login.password')}</Form.Label>
                 <Form.Control
                   type="password"
                   onChange={formik.handleChange}
                   value={formik.values.password}
-                  placeholder="password"
                   name="password"
                   id="password"
                   autoComplete="current-password"
                   isInvalid={authFailed}
                   required
                 />
-                <Form.Control.Feedback type="invalid">the username or password is incorrect</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{t('login.errors.invalidCredentials')}</Form.Control.Feedback>
               </Form.Group>
-              <Button disabled={isLoading} type="submit" variant="outline-primary">Submit</Button>
+              <Button disabled={isLoading} type="submit" variant="outline-primary">{t('login.submit')}</Button>
             </fieldset>
           </Form>
-          <Link to="/signup">Зарегистрироваться</Link>
+          <Link to="/signup">{t('login.registerText')}</Link>
         </div>
       </div>
     </div>

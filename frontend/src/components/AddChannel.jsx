@@ -4,11 +4,12 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
-import {useAddChannelMutation} from '../services/chat.js'
-
+import {useAddChannelMutation} from '../services/chat.js';
+import { useTranslation } from 'react-i18next';
 
 
 export const AddChannel = ({channelCreated}) => {
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -23,11 +24,11 @@ export const AddChannel = ({channelCreated}) => {
 
     const validationSchema = yup.object().shape({
         channelName: yup.string()
-          .min(3, 'Название должно быть от 3 до 20 символов')
-          .max(20, 'Название должно быть от 3 до 20 символов')
+          .min(3, t('channel.errors.channelNameInvalidLength'))
+          .max(20, t('channel.errors.channelNameInvalidLength'))
           .test(
             'unique',
-            'Канал с таким названием уже существует',
+            t('channel.errors.channelExisted'),
             (value) => value && !channelNames.includes(value.toLowerCase())
           ),
       });
@@ -58,7 +59,7 @@ export const AddChannel = ({channelCreated}) => {
 
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Добавить канал</Modal.Title>
+                    <Modal.Title>{t('channel.addModal.title')}</Modal.Title>
                 </Modal.Header>
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
@@ -78,10 +79,10 @@ export const AddChannel = ({channelCreated}) => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
-                            Отменить
+                            {t('channel.addModal.cancel')}
                         </Button>
                         <Button disabled={isChannelCreating} variant="primary" type="submit">
-                            Отправить
+                            {t('channel.addModal.submit')}
                         </Button>
                     </Modal.Footer>
                 </Form>

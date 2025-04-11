@@ -5,9 +5,11 @@ import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useState } from 'react';
-import {useEditChannelMutation, useRemoveChannelMutation} from '../services/chat.js'
+import {useEditChannelMutation, useRemoveChannelMutation} from '../services/chat.js';
+import { useTranslation } from 'react-i18next';
 
 export const Channel = ({channel, active, onClick}) => {
+    const { t } = useTranslation();
     const [showEditModal, setShowEditModal] = useState(false);
     const handleCloseEditModal = () => setShowEditModal(false);
     const handleShowEditModal = () => {
@@ -31,11 +33,11 @@ export const Channel = ({channel, active, onClick}) => {
 
     const validationSchema = yup.object().shape({
         channelName: yup.string()
-          .min(3, 'Название должно быть от 3 до 20 символов')
-          .max(20, 'Название должно быть от 3 до 20 символов')
+          .min(3, t('channel.errors.channelNameInvalidLength'))
+          .max(20, t('channel.errors.channelNameInvalidLength'))
           .test(
             'unique',
-            'Канал с таким названием уже существует',
+            t('channel.errors.channelExisted'),
             (value) => value && !channelNames.includes(value.toLowerCase())
           ),
       });
@@ -81,11 +83,11 @@ export const Channel = ({channel, active, onClick}) => {
                                 "btn-secondary": active
                             })}
                         >
-                            <span className="visually-hidden">Управление каналом</span>
+                            <span className="visually-hidden">{t('channel.channelManagmentTitle')}</span>
                         </button>
                         <ul className="dropdown-menu">
-                            <li><a onClick={handleShowDeleteModal} className="dropdown-item" href="#">Удалить</a></li>
-                            <li><a onClick={handleShowEditModal} className="dropdown-item" href="#">Переименовать</a></li>    
+                            <li><a onClick={handleShowDeleteModal} className="dropdown-item" href="#">{t('channel.deleteChannel')}</a></li>
+                            <li><a onClick={handleShowEditModal} className="dropdown-item" href="#">{t('channel.editChannelName')}</a></li>    
                         </ul>
                     </>
                 )}
@@ -93,7 +95,7 @@ export const Channel = ({channel, active, onClick}) => {
 
             <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Переименовать канал</Modal.Title>
+                    <Modal.Title>{t('channel.editModal.title')}</Modal.Title>
                 </Modal.Header>
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
@@ -113,10 +115,10 @@ export const Channel = ({channel, active, onClick}) => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseEditModal}>
-                            Отменить
+                            {t('channel.editModal.cancel')}
                         </Button>
                         <Button disabled={isChannelEditing} variant="primary" type="submit">
-                            Отправить
+                            {t('channel.editModal.submit')}
                         </Button>
                     </Modal.Footer>
                 </Form>
@@ -124,18 +126,18 @@ export const Channel = ({channel, active, onClick}) => {
 
             <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Удалить канал</Modal.Title>
+                    <Modal.Title>{t('channel.deleteModal.title')}</Modal.Title>
                 </Modal.Header>
                 <Form onSubmit={onDeleteChannel}>
                     <Modal.Body>
-                        Уверены?
+                        {t('channel.deleteModal.sure')}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseDeleteModal}>
-                            Отменить
+                            {t('channel.deleteModal.cancel')}
                         </Button>
                         <Button disabled={isChannelDeleting} variant="danger" type="submit">
-                            Удалить
+                            {t('channel.deleteModal.submit')}
                         </Button>
                     </Modal.Footer>
                 </Form>
