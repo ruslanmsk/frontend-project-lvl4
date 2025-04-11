@@ -1,16 +1,18 @@
-import { Navbar, Container, Nav, Button } from 'react-bootstrap';
+import {
+  Navbar, Container, Nav, Button,
+} from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../slices/authSlice.jsx';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { logout } from '../slices/authSlice.jsx';
 import useAuth from '../hooks/index.jsx';
-import { useTranslation } from "react-i18next";
 
-export const Header = () => {
+const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auth = useAuth();
   const { t } = useTranslation();
-  
+
   const handleLogout = () => {
     // Очистка токена / состояния
     auth.logOut();
@@ -32,8 +34,10 @@ export const Header = () => {
             </Button>
           </Nav>
         )}
-       
+
       </Container>
     </Navbar>
   );
 };
+
+export default Header;

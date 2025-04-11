@@ -1,23 +1,23 @@
-
-import './App.css'
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { MainPage } from './components/Main';
-import { LoginPage } from './components/Login';
-import { NotFoundPage } from './components/NotFound';
-import useAuth from './hooks/index.jsx';
-import React, { useState } from 'react';
-import AuthContext from './contexts/index.jsx';
-import { Provider } from 'react-redux'
-import { store } from './store';
-import { setCredentials } from './slices/authSlice.jsx';
-import { useDispatch } from 'react-redux';
-import { SignupPage } from './components/Signup.jsx';
-import {Header} from './components/Header.jsx';
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import { ru, en } from './locales.js';
+import './App.css';
+import {
+  BrowserRouter, Routes, Route, useLocation, Navigate,
+} from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { Provider, useDispatch } from 'react-redux';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 import { ToastContainer } from 'react-toastify';
 import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react';
+import MainPage from './components/Main';
+import LoginPage from './components/Login';
+import NotFoundPage from './components/NotFound';
+import useAuth from './hooks/index.jsx';
+import AuthContext from './contexts/index.jsx';
+import store from './store';
+import { setCredentials } from './slices/authSlice.jsx';
+import SignupPage from './components/Signup.jsx';
+import Header from './components/Header.jsx';
+import { ru, en } from './locales.js';
 
 const rollbarConfig = {
   accessToken: '467b2df1aaf84b9e9af299ff01587c25f759fa2bb8e28ff7d7b39313f3496a0071212625c962fa0424fca77711820026',
@@ -26,14 +26,13 @@ const rollbarConfig = {
   captureUnhandledRejections: true,
 };
 
-
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
-  
+
   const user = JSON.parse(localStorage.getItem('user'));
 
   if (user) {
-    dispatch(setCredentials({username: user.username, token: user.token}));
+    dispatch(setCredentials({ username: user.username, token: user.token }));
   }
 
   const [loggedIn, setLoggedIn] = useState(Boolean(user && user.token));
@@ -44,8 +43,14 @@ const AuthProvider = ({ children }) => {
     setLoggedIn(false);
   };
 
+  const authContextValue = useMemo(() => ({
+    loggedIn,
+    logIn,
+    logOut,
+  }), [loggedIn]);
+
   return (
-    <AuthContext.Provider value={{ loggedIn, logIn, logOut }}>
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );
@@ -60,22 +65,21 @@ const PrivateRoute = ({ children }) => {
   );
 };
 
-function App() {
-
+const App = () => {
   i18n
-  .use(initReactI18next) // passes i18n down to react-i18next
-  .init({
-    resources: {
-      ru,
-      en,
-    },
-    lng: "ru", 
-    fallbackLng: "en",
+    .use(initReactI18next) // passes i18n down to react-i18next
+    .init({
+      resources: {
+        ru,
+        en,
+      },
+      lng: 'ru',
+      fallbackLng: 'en',
 
-    interpolation: {
-      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
-    }
-  });
+      interpolation: {
+        escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+      },
+    });
 
   return (
     <Provider store={store}>
@@ -90,25 +94,24 @@ function App() {
 
               <Routes>
                 <Route path="*" element={<NotFoundPage />} />
-                <Route 
-                  path="/" 
-                  element={
+                <Route
+                  path="/"
+                  element={(
                     <PrivateRoute>
                       <MainPage />
                     </PrivateRoute>
-                  } 
+                  )}
                 />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
               </Routes>
 
-              
             </BrowserRouter>
           </AuthProvider>
         </ErrorBoundary>
       </RollbarProvider>
     </Provider>
   );
-}
+};
 
-export default App
+export default App;
