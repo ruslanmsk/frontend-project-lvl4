@@ -1,10 +1,10 @@
-import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
-import { removeChannel } from './channelsSlice';
+import { createSlice, createEntityAdapter } from '@reduxjs/toolkit'
+import { removeChannel } from './channelsSlice'
 
-const messagesAdapter = createEntityAdapter();
+const messagesAdapter = createEntityAdapter()
 
 // По умолчанию: { ids: [], entities: {} }
-const initialState = messagesAdapter.getInitialState();
+const initialState = messagesAdapter.getInitialState()
 
 const slice = createSlice({
   name: 'messages',
@@ -16,19 +16,19 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(removeChannel, (state, action) => {
-      const channelId = action.payload;
+      const channelId = action.payload
       messagesAdapter.removeMany(
         state,
         Object.values(state.entities)
-          .filter((msg) => msg.channelId === channelId)
-          .map((msg) => msg.id),
-      );
-    });
+          .filter(msg => msg.channelId === channelId)
+          .map(msg => msg.id),
+      )
+    })
   },
-});
+})
 
-export const { addMessages, addMessage } = slice.actions;
+export const { addMessages, addMessage } = slice.actions
 
-export const selectors = messagesAdapter.getSelectors((state) => state.messages);
+export const selectors = messagesAdapter.getSelectors(state => state.messages)
 
-export default slice.reducer;
+export default slice.reducer

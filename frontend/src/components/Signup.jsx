@@ -1,28 +1,28 @@
-import { useFormik } from 'formik';
-import React, { useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Form } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { toast } from 'react-toastify';
-import { useSignupMutation } from '../services/chat.js';
-import { setCredentials } from '../slices/authSlice.jsx';
-import useAuth from '../hooks/index.jsx';
+import { useFormik } from 'formik'
+import { useEffect, useRef } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { Button, Form } from 'react-bootstrap'
+import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import * as yup from 'yup'
+import { toast } from 'react-toastify'
+import { useSignupMutation } from '../services/chat.js'
+import { setCredentials } from '../slices/authSlice.jsx'
+import useAuth from '../hooks/index.jsx'
 
 const SignupPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const auth = useAuth();
-  const inputRef = useRef();
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const location = useLocation()
+  const navigate = useNavigate()
+  const auth = useAuth()
+  const inputRef = useRef()
+  const dispatch = useDispatch()
+  const { t } = useTranslation()
 
-  const [signup, { isRegistering }] = useSignupMutation();
+  const [signup, { isRegistering }] = useSignupMutation()
 
   useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+    inputRef.current.focus()
+  }, [])
 
   const validationSchema = yup.object().shape({
     username: yup.string()
@@ -35,7 +35,7 @@ const SignupPage = () => {
     confirmPassword: yup.string()
       .required()
       .oneOf([yup.ref('password'), null], t('signup.errors.confirmPasswordInvalid')),
-  });
+  })
 
   const formik = useFormik({
     initialValues: {
@@ -45,28 +45,29 @@ const SignupPage = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      const res = await signup(values);
+      const res = await signup(values)
 
       if (res.error) {
         if (res.error.status === 409) {
-          formik.setErrors({ username: t('signup.errors.userExisted') });
-          inputRef.current.select();
-          return;
+          formik.setErrors({ username: t('signup.errors.userExisted') })
+          inputRef.current.select()
+          return
         }
         if (res.error.status === 'FETCH_ERROR') {
-          toast.error(t('toasts.networkError'));
-        } else {
-          toast.error(t('toasts.loadingError'));
+          toast.error(t('toasts.networkError'))
+        }
+        else {
+          toast.error(t('toasts.loadingError'))
         }
       }
 
-      const { username, token } = res.data;
-      localStorage.setItem('user', JSON.stringify({ username, token }));
-      dispatch(setCredentials({ username, token }));
-      auth.logIn();
-      navigate(location.state?.from || '/');
+      const { username, token } = res.data
+      localStorage.setItem('user', JSON.stringify({ username, token }))
+      dispatch(setCredentials({ username, token }))
+      auth.logIn()
+      navigate(location.state?.from || '/')
     },
-  });
+  })
 
   return (
     <>
@@ -75,7 +76,14 @@ const SignupPage = () => {
       <div className="container-fluid">
         <div className="row justify-content-center pt-5">
           <div className="col">
-            <Form onSubmit={(e) => { e.preventDefault(); console.log(formik.errors); formik.handleSubmit(e); }} className="p-3">
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault()
+                console.log(formik.errors)
+                formik.handleSubmit(e)
+              }}
+              className="p-3"
+            >
               <fieldset>
                 <Form.Group>
                   <Form.Label htmlFor="username">{t('signup.username')}</Form.Label>
@@ -129,7 +137,7 @@ const SignupPage = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default SignupPage;
+export default SignupPage

@@ -1,29 +1,29 @@
-import { useFormik } from 'formik';
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Button, Form } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { setCredentials } from '../slices/authSlice.jsx';
-import useAuth from '../hooks/index.jsx';
-import { useLoginMutation } from '../services/chat.js';
+import { useFormik } from 'formik'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { Button, Form } from 'react-bootstrap'
+import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { setCredentials } from '../slices/authSlice.jsx'
+import useAuth from '../hooks/index.jsx'
+import { useLoginMutation } from '../services/chat.js'
 
 const LoginPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const auth = useAuth();
-  const { t } = useTranslation();
+  const location = useLocation()
+  const navigate = useNavigate()
+  const auth = useAuth()
+  const { t } = useTranslation()
 
-  const inputRef = useRef();
-  const [authFailed, setAuthFailed] = useState(false);
-  const dispatch = useDispatch();
+  const inputRef = useRef()
+  const [authFailed, setAuthFailed] = useState(false)
+  const dispatch = useDispatch()
 
-  const [login, { isLoading, error }] = useLoginMutation();
+  const [login, { isLoading, error }] = useLoginMutation()
 
   useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+    inputRef.current.focus()
+  }, [])
 
   const formik = useFormik({
     initialValues: {
@@ -31,30 +31,31 @@ const LoginPage = () => {
       password: '',
     },
     onSubmit: async (values) => {
-      setAuthFailed(false);
+      setAuthFailed(false)
 
-      const res = await login(values);
+      const res = await login(values)
       if (res.error) {
-        formik.setSubmitting(false);
+        formik.setSubmitting(false)
         if (res.error.status === 401) {
-          setAuthFailed(true);
-          inputRef.current.select();
-          return;
+          setAuthFailed(true)
+          inputRef.current.select()
+          return
         }
         if (error.status === 'FETCH_ERROR') {
-          toast.error(t('toasts.networkError'));
-        } else {
-          toast.error(t('toasts.loadingError'));
+          toast.error(t('toasts.networkError'))
+        }
+        else {
+          toast.error(t('toasts.loadingError'))
         }
       }
 
-      const { username, token } = res.data;
-      localStorage.setItem('user', JSON.stringify({ username, token }));
-      dispatch(setCredentials({ username, token }));
-      auth.logIn();
-      navigate(location.state?.from || '/');
+      const { username, token } = res.data
+      localStorage.setItem('user', JSON.stringify({ username, token }))
+      dispatch(setCredentials({ username, token }))
+      auth.logIn()
+      navigate(location.state?.from || '/')
     },
-  });
+  })
 
   return (
     <>
@@ -100,7 +101,7 @@ const LoginPage = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

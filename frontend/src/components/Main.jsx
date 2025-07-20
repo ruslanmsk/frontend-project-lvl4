@@ -1,96 +1,97 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
-import { useGetChannelsQuery, useGetMessagesQuery, useAddMessageMutation } from '../services/chat.js';
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { io } from 'socket.io-client'
+import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next'
+import { useGetChannelsQuery, useGetMessagesQuery, useAddMessageMutation } from '../services/chat.js'
 import {
   addChannel, addChannels, selectors as channelsSelectors, editChannel, removeChannel,
-} from '../slices/channelsSlice.jsx';
-import { addMessages, addMessage, selectors as messagesSelectors } from '../slices/messagesSlice.jsx';
-import { clean } from '../utils/moderation.js';
-import AddChannel from './AddChannel.jsx';
-import Channel from './Channel.jsx';
+} from '../slices/channelsSlice.jsx'
+import { addMessages, addMessage, selectors as messagesSelectors } from '../slices/messagesSlice.jsx'
+import { clean } from '../utils/moderation.js'
+import AddChannel from './AddChannel.jsx'
+import Channel from './Channel.jsx'
 
 // const socket = io('http://localhost:5002');
-const socket = io(window.location.origin);
+const socket = io(window.location.origin)
 
 const MainPage = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const [newMessage, setNewMessage] = useState('');
-  const [currentChannelId, setChannelId] = useState('');
-  const [sendMessageToServer, { isLoading }] = useAddMessageMutation();
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const [newMessage, setNewMessage] = useState('')
+  const [currentChannelId, setChannelId] = useState('')
+  const [sendMessageToServer, { isLoading }] = useAddMessageMutation()
 
   // Достаём username из стейта
-  const username = useSelector((state) => state.auth.username);
+  const username = useSelector(state => state.auth.username)
 
-  const { data: channelsData = [], error: channelQueryError } = useGetChannelsQuery();
-  const { data: messagesData = [], error: messageQueryError } = useGetMessagesQuery();
+  const { data: channelsData = [], error: channelQueryError } = useGetChannelsQuery()
+  const { data: messagesData = [], error: messageQueryError } = useGetMessagesQuery()
 
   if (channelQueryError || messageQueryError) {
     if (channelQueryError?.status === 'FETCH_ERROR' || messageQueryError?.status === 'FETCH_ERROR') {
-      toast.error(t('toasts.networkError'));
-    } else {
-      toast.error(t('toasts.loadingError'));
+      toast.error(t('toasts.networkError'))
+    }
+    else {
+      toast.error(t('toasts.loadingError'))
     }
   }
 
-  console.log('channelsData', channelsData);
-  console.log('messagesData', messagesData);
+  console.log('channelsData', channelsData)
+  console.log('messagesData', messagesData)
 
   useEffect(() => {
     if (channelsData.length > 0 && !currentChannelId) {
-      setChannelId(channelsData[0].id); // Устанавливаем первый канал из списка
+      setChannelId(channelsData[0].id) // Устанавливаем первый канал из списка
     }
-  }, [channelsData, currentChannelId]);
+  }, [channelsData, currentChannelId])
 
   useEffect(() => {
     socket.on('newMessage', (message) => {
-      dispatch(addMessage(message));
-    });
+      dispatch(addMessage(message))
+    })
 
     socket.on('newChannel', (message) => {
-      dispatch(addChannel(message));
-    });
+      dispatch(addChannel(message))
+    })
 
     socket.on('renameChannel', (payload) => {
-      dispatch(editChannel({ id: payload.id, changes: { name: payload.name } }));
-    });
+      dispatch(editChannel({ id: payload.id, changes: { name: payload.name } }))
+    })
     socket.on('removeChannel', (payload) => {
-      dispatch(removeChannel(payload.id));
+      dispatch(removeChannel(payload.id))
       // TODO: не работает, currentChannelId почему то ""
       if (currentChannelId === payload.id) {
-        setChannelId(channelsData[0].id);
+        setChannelId(channelsData[0].id)
       }
-    });
-  });
+    })
+  })
 
   useEffect(() => {
-    dispatch(addChannels(channelsData));
-    dispatch(addMessages(messagesData));
-  }, [dispatch, channelsData, messagesData]); // Запускается только при изменении данных
+    dispatch(addChannels(channelsData))
+    dispatch(addMessages(messagesData))
+  }, [dispatch, channelsData, messagesData]) // Запускается только при изменении данных
 
   useEffect(() => {
-    console.log('Обновленные каналы:', channelsData);
-  }, [channelsData]); // channels — твой массив каналов из useSelector
+    console.log('Обновленные каналы:', channelsData)
+  }, [channelsData]) // channels — твой массив каналов из useSelector
 
-  const channels = useSelector(channelsSelectors.selectAll);
-  const messages = useSelector(messagesSelectors.selectAll);
+  const channels = useSelector(channelsSelectors.selectAll)
+  const messages = useSelector(messagesSelectors.selectAll)
 
-  const suitableMessages = messages.filter((message) => message.channelId === currentChannelId);
+  const suitableMessages = messages.filter(message => message.channelId === currentChannelId)
 
   const sendMessage = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     if (newMessage.trim()) {
-      await sendMessageToServer({ body: clean(newMessage), username, channelId: currentChannelId });
-      setNewMessage(''); // Очищаем поле ввода
+      await sendMessageToServer({ body: clean(newMessage), username, channelId: currentChannelId })
+      setNewMessage('') // Очищаем поле ввода
     }
-  };
+  }
 
   const onChannelCreated = (id) => {
-    setChannelId(id);
-  };
+    setChannelId(id)
+  }
 
   return (
     <div className="container h-100 my-4 overflow-hidden rounded shadow">
@@ -101,7 +102,7 @@ const MainPage = () => {
             <AddChannel channelCreated={onChannelCreated} />
           </div>
           <ul id="channels-box" className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
-            {channels.map((channel) => (
+            {channels.map(channel => (
               <li key={channel.id} className="nav-item w-100">
                 <Channel
                   channel={channel}
@@ -120,7 +121,7 @@ const MainPage = () => {
               <span className="text-muted">{t('channel.messagesCount', { count: 32 })}</span>
             </div>
             <div id="messages-box" className="chat-messages overflow-auto px-5 ">
-              {suitableMessages.map((message) => (
+              {suitableMessages.map(message => (
                 <div key={message.id} className="text-break mb-2">
                   <b>{message.username}</b>
                   :
@@ -135,7 +136,7 @@ const MainPage = () => {
                 <div className="input-group has-validation">
                   <input
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={e => setNewMessage(e.target.value)}
                     name="body"
                     aria-label={t('channel.ariaLabel')}
                     placeholder={t('channel.placeholder')}
@@ -154,7 +155,7 @@ const MainPage = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MainPage;
+export default MainPage

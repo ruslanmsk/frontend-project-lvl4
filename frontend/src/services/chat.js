@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const chatApi = createApi({
   reducerPath: 'chatApi',
@@ -6,23 +6,23 @@ export const chatApi = createApi({
     baseUrl: '/api/v1/',
     prepareHeaders: (headers, { getState }) => {
       // By default, if we have a token in the store, let's use that for authenticated requests
-      const { token } = getState().auth;
+      const { token } = getState().auth
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set('Authorization', `Bearer ${token}`)
       }
-      return headers;
+      return headers
     },
   }),
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     login: builder.mutation({
-      query: (body) => ({
+      query: body => ({
         url: 'login',
         method: 'POST',
         body,
       }),
     }),
     signup: builder.mutation({
-      query: (body) => ({
+      query: body => ({
         url: 'signup',
         method: 'POST',
         body,
@@ -32,7 +32,7 @@ export const chatApi = createApi({
       query: () => 'channels',
     }),
     addChannel: builder.mutation({
-      query: (body) => ({
+      query: body => ({
         url: 'channels',
         method: 'POST',
         body,
@@ -55,7 +55,7 @@ export const chatApi = createApi({
       query: () => 'messages',
     }),
     addMessage: builder.mutation({
-      query: (body) => ({
+      query: body => ({
         url: 'messages',
         method: 'POST',
         body,
@@ -68,7 +68,7 @@ export const chatApi = createApi({
     //   }),
     // }),
   }),
-});
+})
 
 export const {
   useLoginMutation,
@@ -80,4 +80,4 @@ export const {
   useRemoveChannelMutation,
   useSignupMutation,
   // useRemoveMessageMutation,
-} = chatApi;
+} = chatApi

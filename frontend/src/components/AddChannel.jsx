@@ -1,26 +1,26 @@
-import { useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
-import { useAddChannelMutation } from '../services/chat.js';
-import { clean } from '../utils/moderation.js';
+import { useState } from 'react'
+import { Button, Form, Modal } from 'react-bootstrap'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
+import { useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx'
+import { useAddChannelMutation } from '../services/chat.js'
+import { clean } from '../utils/moderation.js'
 
 const AddChannel = ({ channelCreated }) => {
-  const { t } = useTranslation();
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const { t } = useTranslation()
+  const [show, setShow] = useState(false)
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
 
-  const [createChannel, { isChannelCreating }] = useAddChannelMutation();
+  const [createChannel, { isChannelCreating }] = useAddChannelMutation()
 
   // Получаем список каналов из Redux
-  const channels = useSelector(channelsSelectors.selectAll);
+  const channels = useSelector(channelsSelectors.selectAll)
   // Приводим к нижнему регистру для точного сравнения
-  const channelNames = channels.map((c) => c.name?.toLowerCase()).filter(Boolean);
+  const channelNames = channels.map(c => c.name?.toLowerCase()).filter(Boolean)
 
   const validationSchema = yup.object().shape({
     channelName: yup.string()
@@ -29,9 +29,9 @@ const AddChannel = ({ channelCreated }) => {
       .test(
         'unique',
         t('channel.errors.channelExisted'),
-        (value) => value && !channelNames.includes(value.toLowerCase()),
+        value => value && !channelNames.includes(value.toLowerCase()),
       ),
-  });
+  })
 
   const formik = useFormik({
     initialValues: {
@@ -39,15 +39,15 @@ const AddChannel = ({ channelCreated }) => {
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
-      const createdChannel = await createChannel({ name: clean(values.channelName) });
+      const createdChannel = await createChannel({ name: clean(values.channelName) })
       if (!createdChannel.error) {
-        resetForm(); // Очищаем поле после отправки
-        handleClose(); // Закрываем попап
-        channelCreated(createdChannel.data.id);
-        toast.success(t('toasts.channelCreated'));
+        resetForm() // Очищаем поле после отправки
+        handleClose() // Закрываем попап
+        channelCreated(createdChannel.data.id)
+        toast.success(t('toasts.channelCreated'))
       }
     },
-  });
+  })
 
   return (
     <>
@@ -93,7 +93,7 @@ const AddChannel = ({ channelCreated }) => {
         </Form>
       </Modal>
     </>
-  );
-};
+  )
+}
 
-export default AddChannel;
+export default AddChannel

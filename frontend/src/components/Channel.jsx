@@ -1,32 +1,32 @@
-import classNames from 'classnames';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
-import * as yup from 'yup';
-import { useFormik } from 'formik';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { useEditChannelMutation, useRemoveChannelMutation } from '../services/chat.js';
-import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx';
-import { clean } from '../utils/moderation.js';
+import classNames from 'classnames'
+import { Button, Form, Modal } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
+import * as yup from 'yup'
+import { useFormik } from 'formik'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { useEditChannelMutation, useRemoveChannelMutation } from '../services/chat.js'
+import { selectors as channelsSelectors } from '../slices/channelsSlice.jsx'
+import { clean } from '../utils/moderation.js'
 
 const Channel = ({ channel, active, onClick }) => {
-  const { t } = useTranslation();
-  const [showEditModal, setShowEditModal] = useState(false);
+  const { t } = useTranslation()
+  const [showEditModal, setShowEditModal] = useState(false)
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const handleCloseDeleteModal = () => setShowDeleteModal(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const handleCloseDeleteModal = () => setShowDeleteModal(false)
   const handleShowDeleteModal = () => {
-    setShowDeleteModal(true);
-  };
+    setShowDeleteModal(true)
+  }
 
-  const [editChannelName, { isChannelEditing }] = useEditChannelMutation();
-  const [removeChannel, { isChannelDeleting }] = useRemoveChannelMutation();
+  const [editChannelName, { isChannelEditing }] = useEditChannelMutation()
+  const [removeChannel, { isChannelDeleting }] = useRemoveChannelMutation()
 
   // Получаем список каналов из Redux
-  const channels = useSelector(channelsSelectors.selectAll);
+  const channels = useSelector(channelsSelectors.selectAll)
   // Приводим к нижнему регистру для точного сравнения
-  const channelNames = channels.map((c) => c.name?.toLowerCase()).filter(Boolean);
+  const channelNames = channels.map(c => c.name?.toLowerCase()).filter(Boolean)
 
   const validationSchema = yup.object().shape({
     channelName: yup.string()
@@ -35,11 +35,11 @@ const Channel = ({ channel, active, onClick }) => {
       .test(
         'unique',
         t('channel.errors.channelExisted'),
-        (value) => value && !channelNames.includes(value.toLowerCase()),
+        value => value && !channelNames.includes(value.toLowerCase()),
       ),
-  });
+  })
 
-  const handleCloseEditModal = () => setShowEditModal(false);
+  const handleCloseEditModal = () => setShowEditModal(false)
 
   const formik = useFormik({
     initialValues: {
@@ -50,37 +50,41 @@ const Channel = ({ channel, active, onClick }) => {
       const editChannel = await editChannelName({
         id: channel.id,
         name: clean(values.channelName),
-      });
+      })
       if (!editChannel.error) {
-        resetForm(); // Очищаем поле после отправки
-        handleCloseEditModal(); // Закрываем попап
-        toast.success(t('toasts.channelRenamed'));
+        resetForm() // Очищаем поле после отправки
+        handleCloseEditModal() // Закрываем попап
+        toast.success(t('toasts.channelRenamed'))
         // channelCreated(createdChannel.data.id);
-      } else if (editChannel.error.status === 'FETCH_ERROR') {
-        toast.error(t('toasts.networkError'));
-      } else {
-        toast.error(t('toasts.loadingError'));
+      }
+      else if (editChannel.error.status === 'FETCH_ERROR') {
+        toast.error(t('toasts.networkError'))
+      }
+      else {
+        toast.error(t('toasts.loadingError'))
       }
     },
-  });
+  })
 
   const handleShowEditModal = () => {
-    formik.values.channelName = channel.name;
-    setShowEditModal(true);
-  };
+    formik.values.channelName = channel.name
+    setShowEditModal(true)
+  }
 
   const onDeleteChannel = async (event) => {
-    event.preventDefault();
-    const result = await removeChannel({ id: channel.id });
+    event.preventDefault()
+    const result = await removeChannel({ id: channel.id })
     if (!result.error) {
-      handleCloseDeleteModal();
-      toast.success(t('toasts.channelRemoved'));
-    } else if (result.error.status === 'FETCH_ERROR') {
-      toast.error(t('toasts.networkError'));
-    } else {
-      toast.error(t('toasts.loadingError'));
+      handleCloseDeleteModal()
+      toast.success(t('toasts.channelRemoved'))
     }
-  };
+    else if (result.error.status === 'FETCH_ERROR') {
+      toast.error(t('toasts.networkError'))
+    }
+    else {
+      toast.error(t('toasts.loadingError'))
+    }
+  }
 
   return (
     <>
@@ -96,26 +100,26 @@ const Channel = ({ channel, active, onClick }) => {
           {channel.name}
         </button>
         {channel.removable && (
-        <>
-          <button
-            type="button"
-            aria-expanded="false"
-            data-bs-toggle="dropdown"
-            className={classNames('flex-grow-0 dropdown-toggle dropdown-toggle-split btn', {
-              'btn-secondary': active,
-            })}
-          >
-            <span className="visually-hidden">{t('channel.channelManagmentTitle')}</span>
-          </button>
-          <ul className="dropdown-menu">
-            <li>
-              <button type="button" onClick={handleShowDeleteModal} className="dropdown-item" href="#">{t('channel.deleteChannel')}</button>
-            </li>
-            <li>
-              <button type="button" onClick={handleShowEditModal} className="dropdown-item" href="#">{t('channel.editChannelName')}</button>
-            </li>
-          </ul>
-        </>
+          <>
+            <button
+              type="button"
+              aria-expanded="false"
+              data-bs-toggle="dropdown"
+              className={classNames('flex-grow-0 dropdown-toggle dropdown-toggle-split btn', {
+                'btn-secondary': active,
+              })}
+            >
+              <span className="visually-hidden">{t('channel.channelManagmentTitle')}</span>
+            </button>
+            <ul className="dropdown-menu">
+              <li>
+                <button type="button" onClick={handleShowDeleteModal} className="dropdown-item" href="#">{t('channel.deleteChannel')}</button>
+              </li>
+              <li>
+                <button type="button" onClick={handleShowEditModal} className="dropdown-item" href="#">{t('channel.editChannelName')}</button>
+              </li>
+            </ul>
+          </>
         )}
       </div>
 
@@ -173,7 +177,7 @@ const Channel = ({ channel, active, onClick }) => {
       </Modal>
     </>
 
-  );
-};
+  )
+}
 
-export default Channel;
+export default Channel

@@ -68,7 +68,7 @@ const ru = {
       loadingError: 'Ошибка выполнения запроса',
     },
   },
-};
+}
 
 const en = {
   translation: {
@@ -140,6 +140,6 @@ const en = {
       loadingError: 'Request execution error',
     },
   },
-};
+}
 
-export { ru, en };
+export { ru, en }
